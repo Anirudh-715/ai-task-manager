@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>AI Health Task Manager</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="/static/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+
+<body class="bg-dark text-light">
+
+<div class="d-flex">
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<h3 class="logo">TaskMind</h3>
+
+<ul>
+
+<li>
+<a href="/">
+<i class="fa fa-home"></i>
+Dashboard
+</a>
+</li>
+
+<li>
+<a href="#tasks">
+<i class="fa fa-brain"></i>
+Smart Tasks
+</a>
+</li>
+
+<li>
+<a href="#analytics">
+<i class="fa fa-chart-line"></i>
+Analytics
+</a>
+</li>
+
+<li>
+<a href="#insights">
+<i class="fa fa-lightbulb"></i>
+Insights
+</a>
+</li>
+
+</ul>
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+
+<div class="main-content container-fluid">
+
+<!-- TOP BAR -->
+
+<div class="topbar d-flex justify-content-between align-items-center mb-4">
+
+<h4>AI Productivity Dashboard</h4>
+
+<div class="topbar-icons">
+
+<i class="fa fa-bell"></i>
+
+<div class="profile-menu">
+
+<img 
+src="{{ user.picture }}" 
+width="35" 
+style="border-radius:50%; cursor:pointer;"
+onclick="toggleMenu()"
+>
+
+<div id="profileDropdown" class="profile-dropdown">
+
+<p>{{ user.name }}</p>
+
+<a href="/logout">Logout</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- WELCOME -->
+
+<h2 class="mb-4">
+Welcome Back, {{ user.name.split(' ')[0] }}
+</h2>
+
+
+<!-- STAT CARDS -->
+
+<div class="row">
+
+<div class="col-md-3">
+
+<div class="stat-card">
+
+<i class="fa fa-list-check stat-icon"></i>
+
+<h3>{{ tasks|length }}</h3>
+
+<p>Tasks Generated</p>
+
+<div class="progress">
+
+<div class="progress-bar" style="width:70%"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-3">
+
+<div class="stat-card">
+
+<i class="fa fa-face-smile stat-icon"></i>
+
+<h3>{{ mood }}</h3>
+
+<p>Detected Mood</p>
+
+<div class="progress">
+
+<div class="progress-bar" style="width:60%"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-3">
+
+<div class="stat-card">
+
+<i class="fa fa-bolt stat-icon"></i>
+
+<h3>{{ energy }}</h3>
+
+<p>Energy Level</p>
+
+<div class="progress">
+
+<div class="progress-bar" style="width:75%"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-3">
+
+<div class="stat-card">
+
+<i class="fa fa-lightbulb stat-icon"></i>
+
+<h3>AI</h3>
+
+<div class="ai-insight-box">
+
+{{ insights }}
+
+</div>
+
+<div class="progress">
+
+<div class="progress-bar" style="width:80%"></div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="stat-card">
+
+<i class="fa fa-chart-simple stat-icon"></i>
+
+<h3 id="productivityScore">0%</h3>
+
+<p>Productivity Score</p>
+
+</div>
+
+</div>
+<!-- TASK SECTION -->
+
+<h3 class="mt-5" id="tasks">Today's Tasks</h3>
+<div class="add-task-box">
+
+<input type="text" id="newTaskInput" placeholder="Add your own task...">
+<input type="date" id="dueDate">
+<select id="prioritySelect">
+
+<option value="low">Low</option>
+<option value="medium">Medium</option>
+<option value="high">High</option>
+
+</select>
+
+<button onclick="addTask()">Add Task</button>
+
+</div>
+
+<div class="row" id="taskContainer">
+
+{% for t in tasks %}
+
+<div class="col-md-4 draggable-task" draggable="true">
+
+<div class="task-card">
+
+<div class="task-header">
+
+<span class="task-tag">Smart Task</span>
+
+<input type="checkbox"
+class="task-check"
+onclick="completeTask(this)">
+
+</div>
+
+<h5 class="task-title">{{ t }}</h5>
+
+<p class="task-time">Suggested by AI</p>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
+<!-- ANALYTICS SECTION -->
+
+<h3 class="mt-5" id="analytics">Analytics</h3>
+
+<div class="row">
+
+<div class="col-md-8">
+
+<div class="analytics-card">
+
+<h5>Energy Trend</h5>
+
+<canvas id="energyChart"></canvas>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+fetch("/get_tasks")
+
+.then(r=>r.json())
+
+.then(tasks=>{
+
+const container = document.getElementById("taskContainer")
+
+const colors={
+high:"#ef4444",
+medium:"#f59e0b",
+low:"#22c55e"
+}
+
+tasks.forEach(t=>{
+
+const html=`
+<div class="col-md-4 draggable-task" draggable="true">
+<div class="task-card">
+
+<div class="task-header">
+<span class="task-tag" style="background:${colors[t.priority]}">
+${t.priority.toUpperCase()}
+</span>
+</div>
+
+<h5 class="task-title">${t.text}</h5>
+
+<p class="task-time">Saved Task</p>
+
+</div>
+</div>
+`
+
+container.insertAdjacentHTML("beforeend",html)
+
+})
+
+})
+
+</script>
+
+<!-- CHART SCRIPT -->
+
+<script>
+
+fetch("/history")
+
+.then(r => r.json())
+
+.then(data => {
+
+const labels = data.map(d => d.time)
+
+const energy = data.map(d => d.energy)
+
+new Chart(document.getElementById("energyChart"), {
+
+type: "line",
+
+data: {
+
+labels: labels,
+
+datasets: [
+
+{
+
+label: "Energy Level",
+
+data: energy,
+
+borderColor: "#6366f1",
+
+backgroundColor: "rgba(99,102,241,0.2)",
+
+fill: true
+
+}
+
+]
+
+}
+
+})
+
+})
+
+
+
+
+</script>
+
+
+
+</div> <!-- main-content -->
+
+</div> <!-- layout -->
+<script>
+
+async function addTask(){
+
+const input = document.getElementById("newTaskInput")
+const priority = document.getElementById("prioritySelect").value
+
+const taskText = input.value.trim()
+
+if(taskText === "") return
+
+const response = await fetch("/add_task",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+task:taskText,
+priority:priority,
+date:dueDate
+})
+
+})
+
+const container = document.getElementById("taskContainer")
+
+const colors = {
+high:"#ef4444",
+medium:"#f59e0b",
+low:"#22c55e"
+}
+
+const taskHTML = `
+<div class="col-md-4 new-task">
+
+<div class="task-card">
+
+<div class="task-header">
+
+<span class="task-tag" style="background:${colors[priority]}">
+
+${priority.toUpperCase()}
+
+</span>
+
+<button onclick="deleteTask(this)">✖</button>
+
+</div>
+
+<h5 class="task-title">${taskText}</h5>
+
+<p class="task-time">📅 ${dueDate}</p>
+
+</div>
+
+</div>
+`
+
+container.insertAdjacentHTML("beforeend", taskHTML)
+totalTasks++
+input.value=""
+
+}
+
+function deleteTask(btn){
+
+const task = btn.closest(".col-md-4")
+
+task.remove()
+
+}
+
+</script>
+
+<script>
+let completedTasks = 0
+let totalTasks = document.querySelectorAll(".task-card").length
+
+function completeTask(checkbox){
+
+const taskCard = checkbox.closest(".task-card")
+
+taskCard.style.opacity="0.3"
+taskCard.style.transform="scale(0.9)"
+
+setTimeout(()=>{
+taskCard.remove()
+},400)
+
+completedTasks++
+
+updateScore()
+
+}
+
+function updateScore(){
+
+const score = Math.round((completedTasks/totalTasks)*100)
+
+document.getElementById("productivityScore").innerText = score + "%"
+
+}
+
+
+</script>
+
+
+
+<script>
+
+function toggleMenu(){
+
+const menu = document.getElementById("profileDropdown")
+
+if(menu.style.display==="block"){
+
+menu.style.display="none"
+
+}
+
+else{
+
+menu.style.display="block"
+
+}
+
+}
+
+</script>
+<!-- AI CHAT BUTTON -->
+
+<div id="chatButton" onclick="toggleChat()">
+
+<i class="fa fa-robot"></i>
+
+</div>
+<!-- AI CHAT WINDOW -->
+
+<div id="chatWindow">
+
+<div class="chat-header">
+
+AI Assistant
+
+<div>
+<span onclick="expandChat()">⬜</span>
+<span onclick="toggleChat()">✖</span>
+</div>
+
+</div>
+
+<div id="chatMessages"></div>
+
+<div class="chat-input">
+
+<input type="text" id="chatInput" placeholder="Ask AI anything..." onkeydown="handleEnter(event)">
+
+<button onclick="sendMessage()">Send</button>
+
+</div>
+
+</div>
+<script>
+
+function expandChat(){
+
+const chat = document.getElementById("chatWindow")
+
+chat.style.width="600px"
+chat.style.height="650px"
+
+}
+
+function toggleChat(){
+const chat = document.getElementById("chatWindow")
+
+if(chat.style.display === "flex"){
+chat.style.display = "none"
+}else{
+chat.style.display = "flex"
+}
+}
+
+
+function handleEnter(event){
+if(event.key === "Enter"){
+event.preventDefault()
+sendMessage()
+}
+}
+
+
+async function sendMessage(){
+
+const input = document.getElementById("chatInput")
+const message = input.value.trim()
+
+if(message === "") return
+
+const messages = document.getElementById("chatMessages")
+messages.innerHTML += `<div class="chat-message user-msg">${message}</div>`
+
+input.value = ""
+
+const response = await fetch("/chat", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({message: message})
+})
+
+const data = await response.json()
+
+messages.innerHTML += `<div class="chat-message ai-msg">${data.reply}</div>`
+
+if(data.reply.includes("-")){
+
+const btn = `
+<button onclick="addAITasks(\`${data.reply}\`)">
+Add suggested tasks
+</button>
+`
+
+messages.innerHTML += btn
+
+}
+messages.scrollTop = messages.scrollHeight
+
+}
+function addAITasks(text){
+
+const lines = text.split("\n")
+
+lines.forEach(l=>{
+
+if(l.trim().startsWith("-")){
+
+const task = l.replace("-","").trim()
+
+const container = document.getElementById("taskContainer")
+
+const html = `
+<div class="col-md-4 new-task">
+
+<div class="task-card">
+
+<div class="task-header">
+
+<span class="task-tag">AI Task</span>
+
+<input type="checkbox"
+class="task-check"
+onclick="completeTask(this)">
+
+</div>
+
+<h5 class="task-title">${task}</h5>
+
+<p class="task-time">AI Suggested</p>
+
+</div>
+
+</div>
+`
+
+container.insertAdjacentHTML("beforeend",html)
+
+}
+
+})
+
+}
+
+</script>
+
+<script>
+
+const container = document.getElementById("taskContainer")
+
+let draggedTask = null
+
+document.addEventListener("dragstart", function(e){
+
+if(e.target.classList.contains("draggable-task")){
+draggedTask = e.target
+}
+
+})
+
+document.addEventListener("dragover", function(e){
+e.preventDefault()
+})
+
+document.addEventListener("drop", function(e){
+
+if(e.target.closest(".draggable-task")){
+
+const target = e.target.closest(".draggable-task")
+
+container.insertBefore(draggedTask, target)
+
+}
+
+})
+
+</script>
+
+
+</body>
+
+</html>

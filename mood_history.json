@@ -1,0 +1,112 @@
+[
+    {
+        "mood": "anxious",
+        "energy": 6,
+        "time": "2026-03-12 22:59"
+    },
+    {
+        "mood": "happy",
+        "energy": 10,
+        "time": "2026-03-12 22:59"
+    },
+    {
+        "mood": "nervous",
+        "energy": 4,
+        "time": "2026-03-13 11:50"
+    },
+    {
+        "mood": "happy",
+        "energy": 8,
+        "time": "2026-03-13 11:53"
+    },
+    {
+        "mood": "anxious",
+        "energy": 6,
+        "time": "2026-03-13 11:57"
+    },
+    {
+        "mood": "euphoric",
+        "energy": 8,
+        "time": "2026-03-13 12:00"
+    },
+    {
+        "mood": "nervous",
+        "energy": 8,
+        "time": "2026-03-13 12:05"
+    },
+    {
+        "mood": "neutral",
+        "energy": 5,
+        "time": "2026-03-13 12:07"
+    },
+    {
+        "mood": "anxious",
+        "energy": 4,
+        "time": "2026-03-13 12:09"
+    },
+    {
+        "mood": "anxious",
+        "energy": 6,
+        "time": "2026-03-13 12:15"
+    },
+    {
+        "mood": "anxious",
+        "energy": 5,
+        "time": "2026-03-13 12:18"
+    },
+    {
+        "mood": "anxious",
+        "energy": 4,
+        "time": "2026-03-13 17:13"
+    },
+    {
+        "mood": "happy",
+        "energy": 10,
+        "time": "2026-03-13 17:16"
+    },
+    {
+        "mood": "happy",
+        "energy": 6,
+        "time": "2026-03-13 17:18"
+    },
+    {
+        "mood": "happy",
+        "energy": 10,
+        "time": "2026-03-13 17:24"
+    },
+    {
+        "mood": "happy",
+        "energy": 9,
+        "time": "2026-03-13 17:24"
+    },
+    {
+        "mood": "happy",
+        "energy": 10,
+        "time": "2026-03-13 17:48"
+    },
+    {
+        "mood": "nervous",
+        "energy": 4,
+        "time": "2026-03-13 17:51"
+    },
+    {
+        "mood": "Determined",
+        "energy": 8,
+        "time": "2026-03-13 17:55"
+    },
+    {
+        "mood": "happy",
+        "energy": 9,
+        "time": "2026-03-13 18:37"
+    },
+    {
+        "mood": "happy",
+        "energy": 8,
+        "time": "2026-03-13 18:37"
+    },
+    {
+        "mood": "happy",
+        "energy": 9,
+        "time": "2026-03-13 18:40"
+    }
+]
