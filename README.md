@@ -4,14 +4,32 @@ An intelligent productivity system that generates tasks based on a user's **mood
 
 The system analyzes the user's emotional state and dynamically recommends tasks that match their mental capacity, helping improve productivity while avoiding burnout.
 
+
 ---
 
+## Motivation
+
+Most task managers assume users always have the same energy level.
+
+This project explores a different idea:
+
+**Productivity tools should adapt to human mental states.**
+
+---
 ## Features
 
 ### AI Mood Analysis
 Analyzes user input and detects:
 - Mood
 - Energy level (1–10)
+  
+---
+
+## Screenshots
+## Log-in
+![login](login.png)
+### Dashboard
+![Dashboard](dashboard.png)
 
 ### Smart Task Generation
 AI generates tasks tailored to the user's current energy level.
@@ -104,17 +122,7 @@ Each user has:
 - Weekly productivity reports
 - AI burnout detection
 
----
 
-## Motivation
-
-Most task managers assume users always have the same energy level.
-
-This project explores a different idea:
-
-**Productivity tools should adapt to human mental states.**
-
----
 
 ## Author
 
@@ -125,8 +133,6 @@ https://github.com/Anirudh-715
 
 ---
 
----
 
-## Project Architecture
 
 
